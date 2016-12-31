@@ -56,10 +56,14 @@ var Test =function(src, width, height){
 			var diff = lst_gray - cur_gray;
 			
 			if(diff>sh && posi){
-				DrawCircle(x,y,1,GetColor(255,0,0),1);
+				var tmp = 128+diff*5;
+				if(tmp>255)tmp=255;
+				DrawCircle(x,y,1,GetColor(tmp,0,0),1);
 			}
 			if(diff<-sh && nega){
-				DrawCircle(x,y,1,GetColor(0,0,255),1);
+				var tmp = 128-diff*5;
+				if(tmp>255)tmp=255;
+				DrawCircle(x,y,1,GetColor(0,0,tmp),1);
 			}
 		}
 	}
