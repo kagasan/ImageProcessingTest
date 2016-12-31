@@ -31,7 +31,19 @@ var Test =function(src, width, height){
 			ctx.stroke();
 		}
 	}
+	function DrawBox(X1,Y1,X2,Y2,Color,FillFlg){
+		if(FillFlg){
+			ctx.fillStyle = Color;
+			ctx.fillRect(X1,Y1,X2-X1,Y2-Y1);
+		}
+		else{
+			ctx.strokeStyle = Color;
+			ctx.strokeRect(X1,Y1,X2-X1,Y2-Y1);
+		}
+	}
 	//ここまで出力用canvas設定
+	
+	DrawBox(0,0,width,height,GetColor(255,255,255),1);
 	
 	//ここから計算
 	for(var y = 1 ; y<height;y++){
