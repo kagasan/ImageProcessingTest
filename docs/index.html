@@ -1,0 +1,35 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>画像処理</title>
+<script src="script.js"></script>
+</head>
+<body>
+<h1>画像処理</h1>
+画像処理します
+<hr>
+<b>使い方</b><br>
+パラメータを適当に設定してから画像ファイルを読み込む．<br>
+<hr>
+<b>ファイル選択</b><br>
+<input type="file" id="selectfile" accept='image/*'><br>
+<hr>
+<form name='fm'>
+<b>設定</b><br>
+閾値<input name="sh" type='text' value='5'/><br>
+<hr>
+<b>出力</b><br>
+<textarea name='para'  rows="5" cols="40">
+ここにいくつかのパラメータが生まれる
+</textarea><br>
+<textarea name='ta'  rows="5" cols="40">
+ここにナニカが生まれるハズ
+</textarea><br>
+</form>
+<a id="download" href="#" download="download.txt" onclick="DL()">ダウンロード</a><br>
+<img id="Img"><br>
+<canvas id="outcanvas"></canvas><br>
+<div id="output"></div><br>
+<canvas id="canvas"></canvas><br>
+</body>
+</html>
