@@ -1,7 +1,10 @@
-var MakeCylinder =function(src, width, height){
+var Test =function(src, width, height){
 	//ここから入力パラメータ
 	var form = document.forms.fm;
-	var sh = parseFloat(form.sh.value);//LED直径
+	var sh = parseFloat(form.sh.value);
+	var posi = form.posi.checked;
+	var nega = form.nega.checked;
+	
 	//ここまで入力パラメータ
 	
 	//ここから出力用canvas設定
@@ -40,10 +43,10 @@ var MakeCylinder =function(src, width, height){
 			var cur_gray = (src[cur]+src[cur+1]+src[cur+2])/3;
 			var diff = lst_gray - cur_gray;
 			
-			if(diff>sh){
+			if(diff>sh && posi){
 				DrawCircle(x,y,1,GetColor(255,0,0),1);
 			}
-			if(diff<-sh){
+			if(diff<-sh && nega){
 				DrawCircle(x,y,1,GetColor(0,0,255),1);
 			}
 		}
@@ -77,8 +80,7 @@ window.addEventListener("DOMContentLoaded", function(){
 				context.drawImage(img, 0, 0);
 				var srcData = context.getImageData(0, 0, width, height);
 				var src = srcData.data;
-				MakeCylinder(src, width, height);
-				//ImageProcessing(src, width, height);
+				Test(src, width, height);
 				context.putImageData(srcData, 0, 0);
 				var dataurl = canvas.toDataURL();
 				document.getElementById("output").innerHTML = "<img src='" + dataurl + "'>";
