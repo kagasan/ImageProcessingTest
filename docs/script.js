@@ -41,9 +41,18 @@ var Test =function(src, width, height){
 			ctx.strokeRect(X1,Y1,X2-X1,Y2-Y1);
 		}
 	}
+	function DrawDot(x, y, r=0, g=0, b=0){
+		console.log(x+","+y);
+		var idx = (x+y*width)*4;
+		pixels[idx]=r;
+		pixels[idx+1]=g;
+		pixels[idx+2]=b;
+		pixels[idx+3]=255;
+	}
 	//ここまで出力用canvas設定
 	
 	DrawBox(0,0,width,height,GetColor(255,255,255),1);
+	
 	
 	//ここから計算
 	for(var y = 1 ; y<height;y++){
@@ -58,18 +67,19 @@ var Test =function(src, width, height){
 			if(diff>sh && posi){
 				var tmp = 128+diff*5;
 				if(tmp>255)tmp=255;
-				DrawCircle(x,y,1,GetColor(tmp,0,0),1);
+				DrawDot(x,y,tmp,0,0);
 			}
 			if(diff<-sh && nega){
 				var tmp = 128-diff*5;
 				if(tmp>255)tmp=255;
-				DrawCircle(x,y,1,GetColor(0,0,tmp),1);
+				DrawDot(x,y,0,0,tmp);
 			}
 		}
 	}
 	//ここまで計算
 	
 	//ここから画像変換
+	ctx.putImageData(Data, 0, 0);
 	var png = canvas.toDataURL();
 	document.getElementById("Img").src=png;
 	canvas.width = 0;
