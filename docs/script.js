@@ -47,7 +47,7 @@ var Test =function(src, width, height){
 		pixels[idx]=r;
 		pixels[idx+1]=g;
 		pixels[idx+2]=b;
-		pixels[idx+3]=255;
+		pixels[idx+3]=0;
 	}
 	//ここまで出力用canvas設定
 	
