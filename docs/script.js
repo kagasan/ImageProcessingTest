@@ -47,11 +47,9 @@ var Test =function(src, width, height){
 		pixels[idx]=r;
 		pixels[idx+1]=g;
 		pixels[idx+2]=b;
-		pixels[idx+3]=0;
+		pixels[idx+3]=255;
 	}
 	//ここまで出力用canvas設定
-	
-	DrawBox(0,0,width,height,GetColor(255,255,255),1);
 	
 	
 	//ここから計算
@@ -69,10 +67,13 @@ var Test =function(src, width, height){
 				if(tmp>255)tmp=255;
 				DrawDot(x,y,tmp,0,0);
 			}
-			if(diff<-sh && nega){
+			else if(diff<-sh && nega){
 				var tmp = 128-diff*5;
 				if(tmp>255)tmp=255;
 				DrawDot(x,y,0,0,tmp);
+			}
+			else{
+				DrawDot(x,y,255,255,255);
 			}
 		}
 	}
