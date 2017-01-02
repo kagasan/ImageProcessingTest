@@ -12,8 +12,6 @@ var Test =function(src, width, height){
 	canvas.width = width;
 	canvas.height = height;
 	var ctx = canvas.getContext('2d');
-	var Data = ctx.getImageData(0, 0, width, height);
-	var pixels = Data.data;
 	function GetColor(R,G,B){
 		return "rgb("+R+","+G+","+B+")";
 	}
@@ -41,6 +39,9 @@ var Test =function(src, width, height){
 			ctx.strokeRect(X1,Y1,X2-X1,Y2-Y1);
 		}
 	}
+	DrawBox(0,0,width,height,GetColor(255,255,255),1);
+	var Data = ctx.getImageData(0, 0, width, height);
+	var pixels = Data.data;
 	function DrawDot(x, y, r=0, g=0, b=0){
 		console.log(x+","+y);
 		var idx = (x+y*width)*4;
@@ -51,30 +52,24 @@ var Test =function(src, width, height){
 	}
 	//ここまで出力用canvas設定
 	
-	
 	//ここから計算
-	for(var y = 1 ; y<height;y++){
-		for(var x = 0;x<width;x++){
-			var lst = (x+(y-1)*width)*4;
-			var cur = (x+y*width)*4;
+	for(var x = 0;x<width;x++){
+		var lst_gray = (src[x*4]+src[x*4+1]+src[x*4+2])/3;
+		var cur_gray = (src[(x+width)*4]+src[(x+width)*4+1]+src[(x+width)*4+2])/3;
+		for(var y=1;y+1<height;y++){
+			var nxt_gray = (src[(x+y*width)*4]+src[(x+y*width)*4+1]+src[(x+y*width)*4+2])/3;
 			
-			var lst_gray = (src[lst]+src[lst+1]+src[lst+2])/3;
-			var cur_gray = (src[cur]+src[cur+1]+src[cur+2])/3;
-			var diff = lst_gray - cur_gray;
-			
+			var diff = (nxt_gray - cur_gray) - (cur_gray - lst_gray);
+			diff*=diff;
 			if(diff>sh && posi){
-				var tmp = 128+diff*5;
-				if(tmp>255)tmp=255;
-				DrawDot(x,y,tmp,0,0);
+				DrawDot(x,y,0,0,0);
 			}
-			else if(diff<-sh && nega){
-				var tmp = 128-diff*5;
-				if(tmp>255)tmp=255;
-				DrawDot(x,y,0,0,tmp);
+			if(diff<-sh && nega){
+				DrawDot(x,y,0,0,Math.min(255,128-diff*5));
 			}
-			else{
-				DrawDot(x,y,255,255,255);
-			}
+			
+			lst_gray = cur_gray;
+			cur_gray = nxt_gray;
 		}
 	}
 	//ここまで計算
