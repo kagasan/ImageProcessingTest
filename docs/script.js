@@ -1,128 +1,98 @@
-var Test =function(src, width, height){
-	//ここから入力パラメータ
-	var form = document.forms.fm;
-	var sh = parseFloat(form.sh.value);
-	var posi = form.posi.checked;
-	var nega = form.nega.checked;
-	
-	//ここまで入力パラメータ
-	
-	//ここから出力用canvas設定
-	var canvas = document.getElementById('outcanvas');
-	canvas.width = width;
-	canvas.height = height;
-	var ctx = canvas.getContext('2d');
-	function GetColor(R,G,B){
-		return "rgb("+R+","+G+","+B+")";
-	}
-	function DrawCircle(X,Y,R,Color,FillFlag){
-		if(FillFlag){
-			ctx.fillStyle = Color;
-			ctx.beginPath();
-			ctx.arc(X, Y, R, 0, Math.PI*2, true);
-			ctx.fill();
-		}
-		else{
-			ctx.strokeStyle=Color;
-			ctx.beginPath();
-			ctx.arc(X, Y, R, 0, Math.PI*2, false);
-			ctx.stroke();
-		}
-	}
-	function DrawBox(X1,Y1,X2,Y2,Color,FillFlg){
-		if(FillFlg){
-			ctx.fillStyle = Color;
-			ctx.fillRect(X1,Y1,X2-X1,Y2-Y1);
-		}
-		else{
-			ctx.strokeStyle = Color;
-			ctx.strokeRect(X1,Y1,X2-X1,Y2-Y1);
-		}
-	}
-	DrawBox(0,0,width,height,GetColor(255,255,255),1);
-	var Data = ctx.getImageData(0, 0, width, height);
-	var pixels = Data.data;
-	function DrawDot(x, y, r=0, g=0, b=0){
-		console.log(x+","+y);
-		var idx = (x+y*width)*4;
-		pixels[idx]=r;
-		pixels[idx+1]=g;
-		pixels[idx+2]=b;
-		pixels[idx+3]=255;
-	}
-	//ここまで出力用canvas設定
-	
-	//ここから計算
-	for(var x = 0;x<width;x++){
-		var lst_gray = (src[x*4]+src[x*4+1]+src[x*4+2])/3;
-		var cur_gray = (src[(x+width)*4]+src[(x+width)*4+1]+src[(x+width)*4+2])/3;
-		for(var y=1;y+1<height;y++){
-			var nxt_gray = (src[(x+y*width)*4]+src[(x+y*width)*4+1]+src[(x+y*width)*4+2])/3;
-			
-			var diff = (nxt_gray - cur_gray) - (cur_gray - lst_gray);
-			diff*=diff;
-			if(diff>sh && posi){
-				DrawDot(x,y,0,0,0);
+//画像入力用
+var img = new Image();
+window.onload = function(){
+	document.getElementById("selectfile").addEventListener("change", 
+		function(evt){
+			var file = evt.target.files;
+			var reader = new FileReader();
+			reader.readAsDataURL(file[0]);
+			reader.onload = function(){
+				img.src = reader.result;
+				document.getElementById("InputImage").innerHTML = "<img src='" + img.src + "'></br>";
+				document.forms.fm.ta.value="ファイルを選択\n";
 			}
-			if(diff<-sh && nega){
-				DrawDot(x,y,0,0,Math.min(255,128-diff*5));
-			}
-			
-			lst_gray = cur_gray;
-			cur_gray = nxt_gray;
-		}
-	}
-	//ここまで計算
+		},
+	false);
 	
-	//ここから画像変換
-	ctx.putImageData(Data, 0, 0);
-	var png = canvas.toDataURL();
-	document.getElementById("Img").src=png;
-	canvas.width = 0;
-	canvas.height = 0;
-	//ここまで画像変換
+};
+
+//出力画像を入力画像にする
+var ResultImage;
+function FeedBack(){
+	img.src = ResultImage;
+	document.getElementById("InputImage").innerHTML = "<img src='" + img.src + "'></br>";
+	document.getElementById("OutputImage").innerHTML = "";
+	document.forms.fm.ta.value+="出力画像を入力画像にする\n";
 }
 
-window.addEventListener("DOMContentLoaded", function(){
-	var ofd = document.getElementById("selectfile");
-	ofd.addEventListener("change", function(evt) {
-		var img = null;
-		var canvas = document.createElement("canvas");
-		var file = evt.target.files;
-		var reader = new FileReader();
-		reader.readAsDataURL(file[0]);
-		reader.onload = function(){
-			img = new Image();
-			img.onload = function(){
-				var context = canvas.getContext('2d');
-				var width = img.width;
-				var height = img.height;
-				canvas.width = width;
-				canvas.height = height;
-				context.drawImage(img, 0, 0);
-				var srcData = context.getImageData(0, 0, width, height);
-				var src = srcData.data;
-				Test(src, width, height);
-				context.putImageData(srcData, 0, 0);
-				var dataurl = canvas.toDataURL();
-				document.getElementById("output").innerHTML = "<img src='" + dataurl + "'>";
-			}
-			img.src = reader.result;
-		}
-	}, false);
-});
+//画像出力用
+function ImageOut(DataURL){
+	document.getElementById("OutputImage").innerHTML = "<img src='" + DataURL + "'></br>";
+	ResultImage = DataURL;
+}
 
-//フォームの内容をダウンロードする
-function DL(){
-	var form = document.forms.fm;
-	var content = form.ta.value;
-	var blob = new Blob([ content ], { "type" : "text/plain" });
-	if(window.navigator.msSaveBlob){
-		window.navigator.msSaveBlob(blob, "test.txt"); 
-		//msSaveOrOpenBlobの場合はファイルを保存せずに開ける
-		window.navigator.msSaveOrOpenBlob(blob, "test.txt"); 
+//変化しない
+function Raw(){
+	document.forms.fm.ta.value+="そのまま\n";
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	canvas.width = img.width;
+	canvas.height = img.height;
+	ctx.drawImage(img,0,0);
+	ImageOut(canvas.toDataURL());
+}
+
+//画像縮小
+function Small(){
+	document.forms.fm.ta.value+="画像縮小\n";
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	canvas.width = img.width/2;
+	canvas.height = img.height/2;
+	ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+	ImageOut(canvas.toDataURL());
+}
+
+//グレースケール化
+function Gray(){
+	document.forms.fm.ta.value+="グレースケール化\n";
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	canvas.width = img.width;
+	canvas.height = img.height;
+	ctx.drawImage(img,0,0);
+	var Data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var data = Data.data;
+	for(var i=0;i<data.length;i+=4){
+		var tmp = (data[i]+data[i+1]+data[i+2])/3;
+		data[i]=tmp;
+		data[i+1]=tmp;
+		data[i+2]=tmp;
 	}
-	else{
-		document.getElementById("download").href = window.URL.createObjectURL(blob);
-	}
+	ctx.putImageData(Data,0,0);
+	ImageOut(canvas.toDataURL());
+}
+
+//ガウシアンぼかし
+function Gaussian(){
+	document.forms.fm.ta.value+="ガウシアンぼかし[未実装]\n";
+	document.forms.fm.ta.value+="そのまま\n";
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	canvas.width = img.width;
+	canvas.height = img.height;
+	ctx.drawImage(img,0,0);
+	ImageOut(canvas.toDataURL());
+}
+
+//直線検出
+function Hough(){
+	document.forms.fm.ta.value+="直線検出[未実装]\n";
+	document.forms.fm.ta.value+="そのまま\n";
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+	canvas.width = img.width;
+	canvas.height = img.height;
+	ctx.drawImage(img,0,0);
+	ImageOut(canvas.toDataURL());
 }

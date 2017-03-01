@@ -5,33 +5,29 @@
 <script src="script.js"></script>
 </head>
 <body>
-<h1>画像処理</h1>
-画像処理します
 <hr>
-<b>使い方</b><br>
-パラメータを適当に設定してから画像ファイルを読み込む．<br>
-<hr>
-<b>ファイル選択</b><br>
+<b>画像入力</b><br>
 <input type="file" id="selectfile" accept='image/*'><br>
+<input type="button" value="出力画像を入力画像にする" onclick="FeedBack()"/><br>
 <hr>
+<b>処理履歴</b><br>
 <form name='fm'>
-<b>設定</b><br>
-閾値<input name="sh" type='text' value='5'/><br>
-正<input name="posi" type='checkbox' checked="checked"/><br>
-負<input name="nega" type='checkbox' checked="checked"/><br>
-<hr>
-<b>出力</b><br>
-<textarea name='para'  rows="5" cols="40">
-ここにいくつかのパラメータが生まれる
-</textarea><br>
 <textarea name='ta'  rows="5" cols="40">
-ここにナニカが生まれるハズ
 </textarea><br>
 </form>
-<a id="download" href="#" download="download.txt" onclick="DL()">ダウンロード</a><br>
-<img id="Img"><br>
-<canvas id="outcanvas"></canvas><br>
-<div id="output"></div><br>
-<canvas id="canvas"></canvas><br>
+<hr>
+<b>処理一覧</b><br>
+<input type="button" value="そのまま" onclick="Raw()"/><br>
+<input type="button" value="画像縮小" onclick="Small()"/><br>
+<input type="button" value="グレースケール化" onclick="Gray()"/><br>
+<input type="button" value="ガウシアンぼかし" onclick="Gaussian()"/><br>
+<input type="button" value="直線検出" onclick="Hough()"/><br>
+<hr>
+<b>入力画像</b><br>
+<div id="InputImage"></div>
+<hr>
+<b>出力画像</b><br>
+<div id="OutputImage"></div>
+<hr>
 </body>
 </html>
